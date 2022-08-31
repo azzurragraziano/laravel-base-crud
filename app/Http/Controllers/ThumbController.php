@@ -41,15 +41,24 @@ class ThumbController extends Controller
      */
     public function store(Request $request)
     {
+        // validazione dati
+        $request->validate([
+            'title' => 'required|max:150',
+            'description' => 'required|max:150',
+            'thumb' => 'required|max:60000',
+            'price' => 'required',
+            'series' => 'required|max:100',
+            'sale_date' => 'required',
+            'type' => 'required|max:50'
+        ]);
+
         $form_data = $request->all();
         
         $new_thumb = new Thumb();
         $new_thumb->fill($form_data);
-        // dd($new_thumb);
         $new_thumb->save();
 
         return redirect()->route('thumbs.show', ['thumb' => $new_thumb->id]);
-        // dd('comics salvato');
     }
 
     /**
