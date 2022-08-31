@@ -41,16 +41,8 @@ class ThumbController extends Controller
      */
     public function store(Request $request)
     {
-        // validazione dati
-        $request->validate([
-            'title' => 'required|max:150',
-            'description' => 'required|max:150',
-            'thumb' => 'required|max:60000',
-            'price' => 'required',
-            'series' => 'required|max:100',
-            'sale_date' => 'required',
-            'type' => 'required|max:50'
-        ]);
+        // validation
+        $request->validate($this->getValidationRules());
 
         $form_data = $request->all();
         
@@ -86,7 +78,14 @@ class ThumbController extends Controller
      */
     public function edit($id)
     {
-        //
+
+        $thumb = Thumb::findOrFail($id);
+
+        $data = [
+            'thumb' => $thumb
+        ];
+
+        return view('thumbs.edit', $data);
     }
 
     /**
@@ -98,7 +97,15 @@ class ThumbController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // validation
+        $request->validate($this->getValidationRules());
+
+        $form_data = $request->all();
+
+        $thumb_to_update = Thumb::findOrFail($id);
+        $thumb_to_update->update($form_data);
+
+        return redirect()->route('thumbs.show', ['thumb' => $thumb_to_update->id]);
     }
 
     /**
@@ -109,6 +116,21 @@ class ThumbController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $thumb_to_destroy = Thumb::findOrFail($id);
+        $thumb_to_destroy->delete(); 
+
+        return redirect()->route('thumbs.index');
+    }
+
+    protected function getValidationRules() {
+        return [
+            'title' => 'required|max:150',
+            'description' => 'required|max:150',
+            'thumb' => 'required|max:60000',
+            'price' => 'required',
+            'series' => 'required|max:100',
+            'sale_date' => 'required',
+            'type' => 'required|max:50'
+        ];
     }
 }
